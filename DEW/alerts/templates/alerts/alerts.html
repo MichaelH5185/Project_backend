@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<a href="{% url 'delete' zcode.znum %}">home</a>
+<h1>{{zcode.wcode}}</h1>
+{% for alert in alerts %}
+<h1>{{alert.headline}}</h1>
+<h2>Severity: {{alert.severity}}</h2>
+<h2>Ends: {{alert.ends}}</h2>
+<h2>Type: {{alert.event}}</h2>
+<p>Description: {{alert.description}}</p>
+<p>Instructions: {{alert.instruct}}</p>
+<hr>
+{% endfor %}
+{% endblock content %}

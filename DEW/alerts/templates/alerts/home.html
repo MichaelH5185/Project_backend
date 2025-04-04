@@ -1,0 +1,13 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div>
+    <h1>DEW</h1>
+    <p>Enter your location below</p>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <label>Enter Your Zipcode: </label>
+        <input type="text" name="zipcode" placeholder="Enter Zipcode"/>
+    </form>
+</div>
+{% endblock content %}
