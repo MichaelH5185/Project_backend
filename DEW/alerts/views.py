@@ -42,40 +42,39 @@ def alert(request, pk):
     alerts = None
     if alerts_page != 0:
         page = alerts_page.text
-        n_urls = re.findall(r"\"\@id\"\: \"[a-z,A-Z,0-9,.,:,\/]+\"", page)
-        for u in n_urls:
-            u_json = '{'+u+'}'
-            x = json.loads(u_json)
-            #print(x)
-            info = fetch_data(x["@id"])
-            if info != 0:
-                info = str(info.text)
-                affected = re.findall(r"[A-Z]{3}[0-9]{3}", info)
-                if str(zipc.wcode) in affected or str(alt_code) in affected:
-                    #print("hello")
-                    y = json.loads(info)
-                    props = y["properties"]
-                    try:
-                        instructs = check_val(props["instruction"])
-                        head = check_val(props["headline"])
-                        desc = check_val(props["description"])
-                        end = check_val(props["expires"])
-                        sev = check_val(props["severity"])
-                        event = check_val(props["event"])
-                        n_a = Alert.objects.create(
-                            headline = head,
-                            description = desc,
-                            ref_url = zipc,
-                            ends = end,
-                            instruct = instructs,
-                            severity = sev,
-                            event = event,
-                        )
-                        #print("success")
-                    except:
-                        print("failure")
-        alerts = zipc.alert_set.all()
-    print(len(alerts))
+        ptest = json.loads(page)
+        #print(ptest)
+        for p in ptest['features']:
+            props= p['properties']
+            #print(props['headline'])
+            geo = props['geocode']
+            affected = False
+            for c in geo['UGC']:
+                #print(c)
+                if str(zipc.wcode) == str(c) or str(alt_code) == str(c):
+                    affected = True
+            if affected == True:
+                try:
+                    instructs = check_val(props["instruction"])
+                    head = check_val(props["headline"])
+                    desc = check_val(props["description"])
+                    end = check_val(props["expires"])
+                    sev = check_val(props["severity"])
+                    event = check_val(props["event"])
+                    n_a = Alert.objects.create(
+                        headline = head,
+                        description = desc,
+                        ref_url = zipc,
+                        ends = end,
+                        instruct = instructs,
+                        severity = sev,
+                        event = event,
+                    )
+                    #print("success")
+                except:
+                    print("failure")
+    alerts = zipc.alert_set.all()
+    #print(len(alerts))
     context = {'zcode':zipc, 'alerts':alerts}
     return render(request, 'alerts/alerts.html',context)
 
